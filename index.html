@@ -91,6 +91,10 @@
                 <button id="pickBossPosition" type="button" class="ghost">Selecionar no mapa</button>
               </label>
             </div>
+            <label>
+              Texto antes da batalha
+              <textarea id="bossIntroInput" rows="4"></textarea>
+            </label>
             <p id="bossPositionPreview" class="position-preview"></p>
           </section>
 
@@ -225,6 +229,15 @@
           <button id="continuePortal" type="button">Adicionar segundo portal</button>
           <button id="removeLoosePortal" type="button" class="ghost">Remover portal solto</button>
         </div>
+      </div>
+    </div>
+
+    <div id="bossIntroModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="bossIntroTitle">
+      <div class="modal-card">
+        <p class="eyebrow">Boss final</p>
+        <h2 id="bossIntroTitle"></h2>
+        <p id="bossIntroText"></p>
+        <button id="startBossQuiz" type="button">Comecar batalha</button>
       </div>
     </div>
 

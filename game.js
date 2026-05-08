@@ -21,7 +21,7 @@ const defaultContent = {
     width: 11,
     height: 11,
     playerStart: { x: 2, y: 2 },
-    boss: { name: "Guardiao das Tags", x: 7, y: 9 },
+    boss: { name: "Guardiao das Tags", x: 7, y: 9, intro: "Voce chegou ao ultimo desafio. Prove que aprendeu HTML respondendo minhas perguntas." },
     tiles: makeTiles(11, 11, [
       ...makeBorderPoints(11, 11),
       { x: 4, y: 3 }, { x: 5, y: 3 }, { x: 6, y: 3 },
@@ -49,7 +49,7 @@ const presets = [
       width: 12,
       height: 10,
       playerStart: { x: 1, y: 1 },
-      boss: { name: "Cascata Sombria", x: 10, y: 8 },
+      boss: { name: "Cascata Sombria", x: 10, y: 8, intro: "Estilos sem entendimento se desfazem rapido. Mostre que domina os fundamentos de CSS." },
       tiles: makeTiles(12, 10, [
         ...makeBorderPoints(12, 10),
         { x: 3, y: 2 }, { x: 3, y: 3 }, { x: 3, y: 4 },
@@ -74,7 +74,7 @@ const presets = [
       width: 13,
       height: 11,
       playerStart: { x: 1, y: 9 },
-      boss: { name: "Bug Final", x: 11, y: 1 },
+      boss: { name: "Bug Final", x: 11, y: 1, intro: "Eu sou o erro que aparece quando a logica falha. Responda com clareza para depurar esta batalha." },
       tiles: makeTiles(13, 11, [
         ...makeBorderPoints(13, 11),
         { x: 2, y: 7 }, { x: 3, y: 7 }, { x: 4, y: 7 }, { x: 5, y: 7 },
@@ -124,6 +124,7 @@ const elements = {
   pickPlayerPosition: document.querySelector("#pickPlayerPosition"),
   playerPositionPreview: document.querySelector("#playerPositionPreview"),
   bossNameInput: document.querySelector("#bossNameInput"),
+  bossIntroInput: document.querySelector("#bossIntroInput"),
   pickBossPosition: document.querySelector("#pickBossPosition"),
   bossPositionPreview: document.querySelector("#bossPositionPreview"),
   npcCountInput: document.querySelector("#npcCountInput"),
@@ -156,6 +157,10 @@ const elements = {
   portalModal: document.querySelector("#portalModal"),
   continuePortal: document.querySelector("#continuePortal"),
   removeLoosePortal: document.querySelector("#removeLoosePortal"),
+  bossIntroModal: document.querySelector("#bossIntroModal"),
+  bossIntroTitle: document.querySelector("#bossIntroTitle"),
+  bossIntroText: document.querySelector("#bossIntroText"),
+  startBossQuiz: document.querySelector("#startBossQuiz"),
   victoryOverlay: document.querySelector("#victoryOverlay"),
   victoryTitle: document.querySelector("#victoryTitle"),
   victoryText: document.querySelector("#victoryText"),
@@ -226,6 +231,7 @@ function normalizeMap(map = {}) {
     playerStart: clampPoint(map.playerStart || defaultContent.map.playerStart, width, height),
     boss: {
       name: map.boss?.name || map.bossName || defaultContent.map.boss.name,
+      intro: map.boss?.intro || map.bossIntro || defaultContent.map.boss.intro,
       ...clampPoint(map.boss || defaultContent.map.boss, width, height)
     },
     tiles
@@ -373,6 +379,7 @@ function renderEditor() {
   elements.mapWidthInput.value = state.content.map.width;
   elements.mapHeightInput.value = state.content.map.height;
   elements.bossNameInput.value = state.content.map.boss.name;
+  elements.bossIntroInput.value = state.content.map.boss.intro;
   elements.playerPositionPreview.textContent = `Player em X ${state.content.map.playerStart.x}, Y ${state.content.map.playerStart.y}`;
   elements.bossPositionPreview.textContent = `${state.content.map.boss.name} em X ${state.content.map.boss.x}, Y ${state.content.map.boss.y}`;
   renderNpcCountOptions();
@@ -725,6 +732,17 @@ function startBossFight() {
 
   state.quizMode = "boss";
   state.quizIndex = 0;
+  openBossIntro();
+}
+
+function openBossIntro() {
+  elements.bossIntroTitle.textContent = state.content.map.boss.name;
+  elements.bossIntroText.textContent = state.content.map.boss.intro;
+  elements.bossIntroModal.classList.remove("hidden");
+}
+
+function beginBossQuiz() {
+  elements.bossIntroModal.classList.add("hidden");
   openQuiz(`Desafio: ${state.content.map.boss.name}`, state.content.questions[0]);
 }
 
@@ -849,7 +867,8 @@ function saveContentFromEditor() {
   if (!validatePortalPairs()) return;
 
   const nextContent = collectContentFromEditor();
-  applyContent(nextContent, "Conteudo salvo. O mapa reiniciou para voce estudar o novo tema.");
+  applyContent(nextContent, "Conteudo salvo e aberto no jogo.");
+  showPage("gamePage");
 }
 
 function saveMapFromEditor() {
@@ -884,7 +903,12 @@ function readMapFromEditor() {
     width,
     height,
     playerStart: state.content.map.playerStart,
-    boss: { name: elements.bossNameInput.value.trim() || state.content.map.boss.name, x: state.content.map.boss.x, y: state.content.map.boss.y },
+    boss: {
+      name: elements.bossNameInput.value.trim() || state.content.map.boss.name,
+      intro: elements.bossIntroInput.value.trim() || state.content.map.boss.intro,
+      x: state.content.map.boss.x,
+      y: state.content.map.boss.y
+    },
     tiles: state.content.map.tiles
   }, width, height);
 }
@@ -910,7 +934,7 @@ function resizeMap(map, width, height) {
     width,
     height,
     playerStart: clampPoint(map.playerStart, width, height),
-    boss: { name: map.boss.name, ...clampPoint(map.boss, width, height) },
+    boss: { name: map.boss.name, intro: map.boss.intro, ...clampPoint(map.boss, width, height) },
     tiles
   };
 }
@@ -1308,6 +1332,7 @@ elements.clearLessonDraft.addEventListener("click", () => {
 });
 elements.closeQuiz.addEventListener("click", closeQuiz);
 elements.closeNpcModal.addEventListener("click", () => elements.npcModal.classList.add("hidden"));
+elements.startBossQuiz.addEventListener("click", beginBossQuiz);
 elements.continuePortal.addEventListener("click", () => {
   state.selectedTerrain = "portal";
   elements.portalModal.classList.add("hidden");
