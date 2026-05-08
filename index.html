@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RPG de Estudos</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div>
+        <p class="eyebrow">RPG de Estudos</p>
+        <strong>A Jornada do Conhecimento</strong>
+      </div>
+      <nav class="page-nav" aria-label="Navegacao principal">
+        <button type="button" class="active" data-page-target="gamePage">Jogo</button>
+        <button type="button" data-page-target="masterPage">Mestre</button>
+        <button type="button" data-page-target="presetPage">Presets</button>
+      </nav>
+    </header>
+
+    <main class="app">
+      <section id="gamePage" class="page-view game-shell active" aria-label="Jogo RPG de estudos">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">RPG de Estudos</p>
+            <h1 id="themeTitle">A Jornada do Conhecimento</h1>
+          </div>
+          <div class="stats" aria-label="Progresso">
+            <span><strong id="learnedCount">0</strong>/<strong id="npcTotal">0</strong> NPCs</span>
+            <span id="bossStatus">Boss bloqueado</span>
+          </div>
+        </header>
+
+        <div class="play-area">
+          <div>
+            <div id="map" class="map" aria-label="Mapa do jogo"></div>
+            <div class="controls" aria-label="Controles">
+              <button type="button" data-move="up">&uarr;</button>
+              <button type="button" data-move="left">&larr;</button>
+              <button type="button" data-move="down">&darr;</button>
+              <button type="button" data-move="right">&rarr;</button>
+            </div>
+          </div>
+
+          <aside class="panel">
+            <h2>Diario</h2>
+            <p id="message">Use as setas do teclado ou os botoes para andar. Fale com todos os NPCs antes de enfrentar o boss.</p>
+            <div id="dialogue" class="dialogue"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="masterPage" class="page-view editor" aria-label="Central de conteudo">
+        <header>
+          <p class="eyebrow">Central do mestre</p>
+          <h2>Editar aula, mapa, NPCs e perguntas</h2>
+        </header>
+
+        <nav class="master-tabs" aria-label="Areas do mestre">
+          <button type="button" class="active" data-master-tab="contentEditor">Conteudo e Quiz</button>
+          <button type="button" data-master-tab="mapEditor">Mapa</button>
+        </nav>
+
+        <section id="contentEditor" class="master-panel active" aria-label="Editor de conteudo e quiz">
+          <label>
+            Tema
+            <input id="topicInput" type="text" />
+          </label>
+
+          <section class="editor-group" aria-label="Editor de NPCs">
+            <div class="group-heading">
+              <h3>NPCs</h3>
+              <label>
+                Numero de NPCs
+                <select id="npcCountInput"></select>
+              </label>
+            </div>
+            <div id="npcEditorList" class="npc-editor-list" aria-label="Editor de NPCs"></div>
+          </section>
+
+          <section class="editor-group" aria-label="Editor do boss">
+            <h3>Boss final</h3>
+            <div class="form-grid">
+              <label>
+                Nome do boss
+                <input id="bossNameInput" type="text" />
+              </label>
+              <label>
+                Posicao
+                <button id="pickBossPosition" type="button" class="ghost">Selecionar no mapa</button>
+              </label>
+            </div>
+            <p id="bossPositionPreview" class="position-preview"></p>
+          </section>
+
+          <section class="editor-group" aria-label="Editor de perguntas do boss">
+            <div class="group-heading">
+              <h3>Perguntas do boss</h3>
+              <label>
+                Numero de perguntas
+                <select id="questionCountInput"></select>
+              </label>
+            </div>
+            <div id="questionEditorList" class="question-editor-list"></div>
+          </section>
+
+          <div class="editor-actions">
+            <button id="saveContent" type="button">Salvar conteudo</button>
+            <button id="resetContent" type="button">Restaurar exemplo</button>
+          </div>
+        </section>
+
+        <section id="mapEditor" class="master-panel" aria-label="Editor visual de mapa">
+          <h3>Editor de mapa</h3>
+          <div class="form-grid">
+            <label>
+              Largura
+              <input id="mapWidthInput" type="number" min="6" max="16" />
+            </label>
+            <label>
+              Altura
+              <input id="mapHeightInput" type="number" min="6" max="16" />
+            </label>
+            <label>
+              Inicio do player
+              <button id="pickPlayerPosition" type="button" class="ghost">Selecionar no mapa</button>
+            </label>
+          </div>
+          <p id="playerPositionPreview" class="position-preview"></p>
+          <div class="map-editor-layout">
+            <div id="terrainEditorMap" class="terrain-editor-map" aria-label="Mapa para desenhar terrenos"></div>
+            <aside class="terrain-tools" aria-label="Tipos de terreno">
+              <button type="button" class="active" data-terrain="grass">Grama</button>
+              <button type="button" data-terrain="stone">Pedra</button>
+              <button type="button" data-terrain="portal">Portal</button>
+              <button type="button" data-terrain="erase">Apagar</button>
+            </aside>
+          </div>
+          <div class="editor-actions">
+            <button id="saveMapContent" type="button">Salvar mapa</button>
+            <button id="fillGrass" type="button" class="ghost">Preencher com grama</button>
+          </div>
+        </section>
+      </section>
+
+      <section id="presetPage" class="page-view preset-page" aria-label="Aulas prontas">
+        <header>
+          <p class="eyebrow">Aulas prontas</p>
+          <h2>Escolha uma base para editar</h2>
+        </header>
+        <section class="editor-group" aria-label="Banco local de aulas">
+          <div class="group-heading">
+            <div>
+              <h3>Banco local</h3>
+              <p class="position-preview">Salve suas aulas sem alterar os presets originais.</p>
+            </div>
+            <label>
+              Nome da aula
+              <input id="savedLessonName" type="text" placeholder="Minha aula de HTML" />
+            </label>
+          </div>
+          <div class="editor-actions">
+            <button id="saveLessonToDb" type="button">Salvar aula atual</button>
+            <button id="clearLessonDraft" type="button" class="ghost">Novo rascunho</button>
+          </div>
+          <div id="savedLessonList" class="saved-lesson-list" aria-label="Aulas salvas"></div>
+        </section>
+        <section class="editor-group" aria-label="Presets personalizados">
+          <div class="group-heading">
+            <div>
+              <h3>Presets personalizados</h3>
+              <p class="position-preview">Salve a aula atual como preset editavel para reutilizar como modelo.</p>
+            </div>
+            <label>
+              Nome do preset
+              <input id="customPresetName" type="text" placeholder="Meu preset de mapa" />
+            </label>
+          </div>
+          <div class="editor-actions">
+            <button id="saveCustomPreset" type="button">Salvar como preset</button>
+            <button id="useCurrentAsPresetName" type="button" class="ghost">Usar nome da aula</button>
+          </div>
+        </section>
+        <div id="presetList" class="preset-list"></div>
+      </section>
+    </main>
+
+    <div id="quizModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="quizTitle">
+      <div class="modal-card">
+        <h2 id="quizTitle">Desafio do boss</h2>
+        <p id="quizQuestion"></p>
+        <div id="quizOptions" class="quiz-options"></div>
+        <button id="closeQuiz" type="button" class="ghost">Voltar ao mapa</button>
+      </div>
+    </div>
+
+    <div id="positionModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="positionTitle">
+      <div class="modal-card wide-modal">
+        <h2 id="positionTitle">Selecionar posicao</h2>
+        <p id="positionHelp"></p>
+        <div id="positionPickerMap" class="position-picker-map"></div>
+        <p id="positionSelection" class="position-preview"></p>
+        <div class="editor-actions">
+          <button id="confirmPosition" type="button">Confirmar</button>
+          <button id="cancelPosition" type="button" class="ghost">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="npcModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="npcModalTitle">
+      <div class="modal-card">
+        <p class="eyebrow">NPC</p>
+        <h2 id="npcModalTitle"></h2>
+        <p id="npcModalText"></p>
+        <button id="closeNpcModal" type="button">Continuar</button>
+      </div>
+    </div>
+
+    <div id="portalModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="portalModalTitle">
+      <div class="modal-card">
+        <h2 id="portalModalTitle">Portal incompleto</h2>
+        <p>Portais funcionam em dupla. Adicione outro portal ou remova o portal solto com a ferramenta de apagar.</p>
+        <div class="editor-actions">
+          <button id="continuePortal" type="button">Adicionar segundo portal</button>
+          <button id="removeLoosePortal" type="button" class="ghost">Remover portal solto</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="victoryOverlay" class="victory-overlay hidden" aria-live="polite">
+      <div class="victory-card">
+        <p class="eyebrow">Vitoria</p>
+        <h2 id="victoryTitle">Boss derrotado!</h2>
+        <p id="victoryText"></p>
+      </div>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>
