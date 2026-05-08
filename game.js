@@ -744,13 +744,25 @@ function showQuestion(current) {
   elements.quizQuestion.textContent = current.question;
   elements.quizOptions.innerHTML = "";
 
-  current.options.forEach((option, index) => {
+  shuffleOptions(current.options).forEach(({ option, originalIndex }) => {
     const button = document.createElement("button");
     button.type = "button";
     button.textContent = option;
-    button.addEventListener("click", () => answerQuestion(index));
+    button.dataset.answerIndex = originalIndex;
+    button.addEventListener("click", () => answerQuestion(originalIndex));
     elements.quizOptions.appendChild(button);
   });
+}
+
+function shuffleOptions(options) {
+  const shuffled = options.map((option, originalIndex) => ({ option, originalIndex }));
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[index]];
+  }
+
+  return shuffled;
 }
 
 function answerQuestion(index) {
@@ -758,10 +770,25 @@ function answerQuestion(index) {
   const buttons = [...elements.quizOptions.querySelectorAll("button")];
   const isCorrect = index === current.answer;
 
+  if (!isCorrect && state.quizMode === "boss") {
+    buttons.forEach((button) => {
+      button.disabled = true;
+      if (Number(button.dataset.answerIndex) === index) button.classList.add("wrong");
+    });
+
+    window.setTimeout(() => {
+      state.quizIndex = 0;
+      setMessage(`Resposta errada. ${state.content.map.boss.name} se recuperou e o desafio reiniciou.`);
+      closeQuiz();
+    }, 650);
+    return;
+  }
+
   buttons.forEach((button, buttonIndex) => {
     button.disabled = true;
-    if (buttonIndex === current.answer) button.classList.add("correct");
-    if (buttonIndex === index && !isCorrect) button.classList.add("wrong");
+    const answerIndex = Number(button.dataset.answerIndex);
+    if (answerIndex === current.answer) button.classList.add("correct");
+    if (answerIndex === index && !isCorrect) button.classList.add("wrong");
   });
 
   window.setTimeout(() => {
